@@ -92,6 +92,146 @@ app.delete('/clear', (req, res) => {
     res.json({ message: 'Database cleared' });
 });
 
+
+
+// ========== INDIVIDUAL ENCRYPTION/DECRYPTION API ENDPOINTS ==========
+
+// Caesar Cipher
+app.post('/api/caesar/encrypt', (req, res) => {
+    try {
+        const { text } = req.body;
+        if (!text) {
+            return res.status(400).json({ error: 'Text is required' });
+        }
+        const encrypted = encryption.caesarEncrypt(text);
+        res.json({ encrypted });
+    } catch (error) {
+        res.status(500).json({ error: 'Caesar encryption failed' });
+    }
+});
+
+app.post('/api/caesar/decrypt', (req, res) => {
+    try {
+        const { text } = req.body;
+        if (!text) {
+            return res.status(400).json({ error: 'Text is required' });
+        }
+        const decrypted = encryption.caesarDecrypt(text);
+        res.json({ decrypted });
+    } catch (error) {
+        res.status(500).json({ error: 'Caesar decryption failed' });
+    }
+});
+
+// Columnar Transposition
+app.post('/api/columnar/encrypt', (req, res) => {
+    try {
+        const { text } = req.body;
+        if (!text) {
+            return res.status(400).json({ error: 'Text is required' });
+        }
+        const encrypted = encryption.columnarEncrypt(text);
+        res.json({ encrypted });
+    } catch (error) {
+        res.status(500).json({ error: 'Columnar encryption failed' });
+    }
+});
+
+app.post('/api/columnar/decrypt', (req, res) => {
+    try {
+        const { text } = req.body;
+        if (!text) {
+            return res.status(400).json({ error: 'Text is required' });
+        }
+        const decrypted = encryption.columnarDecrypt(text);
+        res.json({ decrypted });
+    } catch (error) {
+        res.status(500).json({ error: 'Columnar decryption failed' });
+    }
+});
+
+// Hill Cipher
+app.post('/api/hill/encrypt', (req, res) => {
+    try {
+        const { text } = req.body;
+        if (!text) {
+            return res.status(400).json({ error: 'Text is required' });
+        }
+        const encrypted = encryption.hillEncrypt(text);
+        res.json({ encrypted });
+    } catch (error) {
+        res.status(500).json({ error: 'Hill encryption failed' });
+    }
+});
+
+app.post('/api/hill/decrypt', (req, res) => {
+    try {
+        const { text } = req.body;
+        if (!text) {
+            return res.status(400).json({ error: 'Text is required' });
+        }
+        const decrypted = encryption.hillDecrypt(text);
+        res.json({ decrypted });
+    } catch (error) {
+        res.status(500).json({ error: 'Hill decryption failed' });
+    }
+});
+
+// Rail Fence Cipher
+app.post('/api/railfence/encrypt', (req, res) => {
+    try {
+        const { text } = req.body;
+        if (!text) {
+            return res.status(400).json({ error: 'Text is required' });
+        }
+        const encrypted = encryption.railFenceEncrypt(text);
+        res.json({ encrypted });
+    } catch (error) {
+        res.status(500).json({ error: 'Rail Fence encryption failed' });
+    }
+});
+
+app.post('/api/railfence/decrypt', (req, res) => {
+    try {
+        const { text } = req.body;
+        if (!text) {
+            return res.status(400).json({ error: 'Text is required' });
+        }
+        const decrypted = encryption.railFenceDecrypt(text);
+        res.json({ decrypted });
+    } catch (error) {
+        res.status(500).json({ error: 'Rail Fence decryption failed' });
+    }
+});
+
+// Vigenère Cipher (numeric)
+app.post('/api/vigenere/encrypt', (req, res) => {
+    try {
+        const { text } = req.body;
+        if (!text) {
+            return res.status(400).json({ error: 'Text is required' });
+        }
+        const encrypted = encryption.vigenereEncryptNumeric(text);
+        res.json({ encrypted });
+    } catch (error) {
+        res.status(500).json({ error: 'Vigenère encryption failed' });
+    }
+});
+
+app.post('/api/vigenere/decrypt', (req, res) => {
+    try {
+        const { text } = req.body;
+        if (!text) {
+            return res.status(400).json({ error: 'Text is required' });
+        }
+        const decrypted = encryption.vigenereDecryptNumeric(text);
+        res.json({ decrypted });
+    } catch (error) {
+        res.status(500).json({ error: 'Vigenère decryption failed' });
+    }
+});
+
+
 // Start server
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);

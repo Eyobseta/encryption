@@ -1,10 +1,3 @@
-// ============================================
-// CLASSICAL ENCRYPTION ALGORITHMS - MANUAL IMPLEMENTATION
-// ============================================
-
-// DISCLAIMER: These algorithms are for academic demonstration only
-// and are NOT secure for real-world applications.
-
 // ========== 1. CAESAR CIPHER (shift = 3) ==========
 function caesarEncrypt(text) {
     let result = '';

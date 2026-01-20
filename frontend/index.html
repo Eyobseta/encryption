@@ -37,36 +37,50 @@
         </div>
 
         <form id="registrationForm">
-            <div class="form-group">
-                <label for="fullName">Full Name:</label>
-                <input type="text" id="fullName" name="fullName" required>
-                <small>Will be encrypted using Caesar Cipher</small>
-            </div>
+            <!-- Full Name Field -->
+<div class="form-group">
+    <label for="fullName">Full Name:</label>
+    <input type="text" id="fullName" name="fullName" required 
+           pattern="[A-Za-z\s]+" 
+           title="Enter alphabetic characters and spaces only">
+    <small>Will be encrypted using Caesar Cipher. Enter letters (A-Z, a-z) and spaces only.</small>
+</div>
 
-            <div class="form-group">
-                <label for="email">Email Address:</label>
-                <input type="email" id="email" name="email" required>
-                <small>Will be encrypted using Columnar Transposition</small>
-            </div>
+<!-- Email Field -->
+<div class="form-group">
+    <label for="email">Email Address:</label>
+    <input type="email" id="email" name="email" required 
+           pattern="[^@\s]+@[^@\s]+\.[^@\s]+" 
+           title="Enter a valid email address">
+    <small>Will be encrypted using Columnar Transposition. Enter a valid email address (e.g., user@example.com).</small>
+</div>
 
-            <div class="form-group">
-                <label for="password">Password:</label>
-                <input type="password" id="password" name="password" required>
-                <small>Will be encrypted using Hill Cipher (2×2 matrix)</small>
-            </div>
+<!-- Password Field -->
+<div class="form-group">
+    <label for="password">Password:</label>
+    <input type="password" id="password" name="password" required
+           minlength="4"
+           title="Enter at least 4 characters">
+    <small>Will be encrypted using Hill Cipher (2×2 matrix). Enter letters (A-Z, a-z) only. Non-letters will be removed.</small>
+</div>
 
-            <div class="form-group">
-                <label for="nationalId">National ID:</label>
-                <input type="text" id="nationalId" name="nationalId" required>
-                <small>Will be encrypted using Rail Fence Cipher (3 rails)</small>
-            </div>
+<!-- National ID Field -->
+<div class="form-group">
+    <label for="nationalId">National ID:</label>
+    <input type="text" id="nationalId" name="nationalId" required
+           pattern="[A-Za-z0-9]+"
+           title="Enter alphanumeric characters only">
+    <small>Will be encrypted using Rail Fence Cipher (3 rails). Enter letters and/or numbers only.</small>
+</div>
 
-            <div class="form-group">
-                <label for="phoneNumber">Phone Number:</label>
-                <input type="tel" id="phoneNumber" name="phoneNumber" required>
-                <small>Will be encrypted using Vigenère Cipher (numeric version)</small>
-            </div>
-
+<!-- Phone Number Field -->
+<div class="form-group">
+    <label for="phoneNumber">Phone Number:</label>
+    <input type="tel" id="phoneNumber" name="phoneNumber" required
+           pattern="[0-9]+"
+           title="Enter digits only (0-9)">
+    <small>Will be encrypted using Vigenère Cipher (numeric version). Enter digits (0-9) only.</small>
+</div>
             <button type="submit">Register User</button>
             <button type="button" class="secondary" onclick="clearForm()">Clear Form</button>
         </form>
@@ -78,56 +92,7 @@
         <p>Software Security Course Project | Classical Encryption Demo</p>
         <p><strong>IMPORTANT:</strong> This is an academic demonstration only. Do not use for real applications.</p>
     </footer>
-
-    <script>
-        document.getElementById('registrationForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const formData = {
-                fullName: document.getElementById('fullName').value,
-                email: document.getElementById('email').value,
-                password: document.getElementById('password').value,
-                nationalId: document.getElementById('nationalId').value,
-                phoneNumber: document.getElementById('phoneNumber').value
-            };
-            
-            try {
-                const response = await fetch('http://localhost:3000/register', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(formData)
-                });
-                
-                const result = await response.json();
-                
-                if (result.success) {
-                    document.getElementById('responseMessage').innerHTML = `
-                        <div style="background-color: #d4edda; padding: 15px; border-radius: 5px;">
-                            <strong>✓ User registered successfully!</strong><br>
-                            Encrypted data stored in database.<br>
-                            <small>ID: ${result.encryptedUser.id}</small>
-                        </div>
-                    `;
-                    document.getElementById('registrationForm').reset();
-                } else {
-                    throw new Error('Registration failed');
-                }
-            } catch (error) {
-                document.getElementById('responseMessage').innerHTML = `
-                    <div style="background-color: #f8d7da; padding: 15px; border-radius: 5px;">
-                        <strong>✗ Error:</strong> ${error.message}<br>
-                        Make sure the backend server is running on port 3000.
-                    </div>
-                `;
-            }
-        });
-        
-        function clearForm() {
-            document.getElementById('registrationForm').reset();
-            document.getElementById('responseMessage').innerHTML = '';
-        }
-    </script>
+    
+    <script src="index.js"></script>
 </body>
 </html>

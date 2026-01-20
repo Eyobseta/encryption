@@ -764,31 +764,43 @@ function columnarEncrypt(text) {
             </div>
         </div>
 
-        <!-- Test All Algorithms Section -->
-        <h2>Test All Encryption & Decryption Algorithms</h2>
-        <div class="test-section">
-            <h3>Interactive Algorithm Testing</h3>
-            <p>Enter text below to test all 5 encryption algorithms and their corresponding decryption functions:</p>
-            
-            <div class="form-group">
-                <label for="testInput">Input Text/Number:</label>
-                <input type="text" id="testInput" placeholder="Enter text or numbers to test..." style="width: 100%; padding: 12px; font-size: 16px;">
-                <small>Note: Each algorithm has specific input requirements (text vs numbers)</small>
-            </div>
-            
-            <div class="test-controls">
-                <button class="test-button" onclick="testAllEncryption()">Test All Encryption</button>
-                <button class="test-button" onclick="testAllDecryption()">Test All Decryption</button>
-                <button class="test-button" onclick="testFullCycle()">Test Encryption → Decryption Cycle</button>
-                <button class="test-button secondary" onclick="clearAllTests()">Clear All Tests</button>
-            </div>
-            
-            <div id="testResults" class="test-results">
-                <!-- Test results will appear here -->
-                <p style="text-align: center; color: #7f8c8d;">Test results will appear here...</p>
-            </div>
+<!-- Test Section -->
+<h2>Test Encryption & Decryption Algorithms</h2>
+<div class="test-section">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+        <h3 style="margin: 0;">Interactive Algorithm Testing</h3>
+        <div id="serverStatus" style="font-size: 12px; padding: 5px 10px; background: #d4edda; border-radius: 3px; color: #155724;">
+            ✓ Backend Connected
         </div>
-
+    </div>
+    
+    <div style="background: #f0f8ff; padding: 15px; border-radius: 5px; margin-bottom: 20px;">
+        <p><strong>Current Algorithm:</strong> <span id="currentAlgorithmName">Caesar Cipher</span> 
+           (<span id="currentAlgorithmDesc">Shift = 3</span>)</p>
+        <p><small>Using backend API at: http://localhost:3000</small></p>
+    </div>
+    
+    <div class="form-group">
+        <label for="testInput">Input Text/Number:</label>
+        <input type="text" id="testInput" placeholder="Enter text or numbers to test..." 
+               style="width: 100%; padding: 12px; font-size: 16px; margin-bottom: 5px;">
+        <small id="inputGuidelines" style="display: block; margin-bottom: 5px;">
+            Enter text with letters (A-Z, a-z) and spaces. Other characters remain unchanged.
+        </small>
+        <!-- Validation message will be inserted here by JavaScript -->
+    </div>
+    
+    <div class="test-controls">
+        <button class="test-button" onclick="testEncryptionCurrent()">Test Encryption of Current Algorithm</button>
+        <button class="test-button" onclick="testDecryptionCurrent()">Test Decryption of Current Algorithm</button>
+        <button class="test-button" onclick="testFullCycle()">Test Encryption → Decryption Cycle</button>
+        <button class="test-button secondary" onclick="clearAllTests()">Clear All Tests</button>
+    </div>
+    
+    <div id="testResults" class="test-results">
+        <p style="text-align: center; color: #7f8c8d;">Test results will appear here...</p>
+    </div>
+</div>
         <!-- Algorithm Comparison Table -->
         <h2>Algorithm Comparison</h2>
         <table class="comparison-table">
@@ -900,20 +912,26 @@ function columnarEncrypt(text) {
         <h2>Project Architecture</h2>
         <div class="code-block">
         <pre>
-Project Structure:
-classical-encryption-app/
-├── backend/
-│   ├── server.js           (Express server with API endpoints)
-│   ├── encryption.js       (All manual encryption implementations)
-│   └── package.json        (Node.js dependencies)
-├── frontend/
-│   ├── index.html          (Registration page with form)
-│   ├── users.html          (View encrypted/decrypted data)
-│   ├── presentation.html   (This educational page)
-│   ├── style.css           (Minimal styling)
-│   └── script.js           (Frontend JavaScript)
-└── documentation/
-    └── encryption_documentation.tex  (LaTeX documentation)
+            Project Structure:
+                                classical-encryption-app/
+                                        ├── backend/
+                                        |   ├── node_modules
+                                        │   ├── server.js        (Express server with API endpoints)
+                                        │   ├── encryption.js    (All manual encryption implementations)
+                                        |   ├── package-lock.json
+                                        │   └── package.json        (Node.js dependencies)
+                                        ├── frontend/
+                                        │   ├── index.html        (Registration page with form)
+                                        │   ├── users.html        (View encrypted/decrypted data)
+                                        │   ├── presentation.html   (This educational page)
+                                        │   ├── style.css           (Minimal styling)
+                                        |   ├── users.css
+                                        |   ├── presentation.css   
+                                        │   ├── index.js           (Frontend JavaScript)
+                                        |   ├── users.js
+                                        |   └── presentation.js
+                                        └── documentation/
+                                            └── encryption_documentation.tex  (LaTeX documentation)
 
     </pre>
         </div>
@@ -924,6 +942,6 @@ classical-encryption-app/
         <p><strong>Educational Goal:</strong> Understand classical encryption principles to appreciate modern cryptography</p>
     </footer>
 
-    <script src="script.js"></script>
+<script type="module" src="presentation.js"></script>
 </body>
 </html>
