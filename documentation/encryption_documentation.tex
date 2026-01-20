@@ -1,0 +1,344 @@
+\documentclass[12pt]{article}
+\usepackage{amsmath}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{geometry}
+\geometry{margin=1in}
+
+\title{Classical Encryption Web Application \\ Software Security Course Project}
+\author{Student Name}
+\date{January 19, 2026}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+This document provides a comprehensive explanation of the classical encryption web application developed for the Software Security course. The project demonstrates five classical encryption techniques implemented manually without using any cryptography libraries. Each algorithm is explained with mathematical formulas, JavaScript implementation, and security considerations.
+\end{abstract}
+
+\section*{Disclaimer}
+\textbf{These classical encryption algorithms are implemented strictly for academic demonstration and are not secure for real-world applications.} This project is purely educational and should not be used for any actual data protection.
+
+\tableofcontents
+
+\section{Introduction}
+\subsection{Project Purpose}
+The primary goal of this project is to demonstrate classical encryption techniques through manual implementation, emphasizing clarity and correctness rather than system complexity. The web application encrypts user registration data using five different classical algorithms before storing it in the database.
+
+\subsection{System Overview}
+The application consists of:
+\begin{itemize}
+    \item Backend: Node.js/Express server with manual encryption implementations
+    \item Frontend: Three HTML pages (Registration, Users, Presentation)
+    \item Database: PostgreSQL simulated with in-memory storage
+    \item Encryption: Five classical techniques applied to different data fields
+\end{itemize}
+
+\section{Encryption Algorithms}
+
+\subsection{Caesar Cipher}
+\subsubsection{Algorithm Description}
+The Caesar cipher is a substitution cipher where each letter is shifted a fixed number of positions down the alphabet. In this implementation, we use a shift of 3.
+
+\subsubsection{Mathematical Formulation}
+\begin{align*}
+    \text{Encryption:} & \quad E(x) = (x + 3) \mod 26 \\
+    \text{Decryption:} & \quad D(x) = (x - 3) \mod 26
+\end{align*}
+Where $x$ is the numerical position of the letter (A=0, B=1, ..., Z=25).
+
+\subsubsection{JavaScript Implementation}
+\begin{lstlisting}[language=JavaScript, caption=Caesar Cipher Implementation]
+function caesarEncrypt(text) {
+    let result = '';
+    const shift = 3;
+    
+    for (let i = 0; i < text.length; i++) {
+        let char = text[i];
+        
+        if (char >= 'A' && char <= 'Z') {
+            result += String.fromCharCode(
+                ((char.charCodeAt(0) - 65 + shift) % 26) + 65
+            );
+        }
+        else if (char >= 'a' && char <= 'z') {
+            result += String.fromCharCode(
+                ((char.charCodeAt(0) - 97 + shift) % 26) + 97
+            );
+        }
+        else {
+            result += char;
+        }
+    }
+    return result;
+}
+\end{lstlisting}
+
+\subsubsection{Security Analysis}
+\begin{itemize}
+    \item \textbf{Key Space:} Only 25 possible shifts
+    \item \textbf{Vulnerability:} Easily broken by brute force or frequency analysis
+    \item \textbf{Modern Equivalent:} Not used in modern systems
+\end{itemize}
+
+\subsection{Columnar Transposition Cipher}
+\subsubsection{Algorithm Description}
+This transposition cipher writes the plaintext in rows of a fixed length and then reads the columns in an order determined by a keyword. Our key is "SECURITY".
+
+\subsubsection{Mathematical Formulation}
+Given plaintext $P$ of length $n$ and key $K$ of length $m$:
+\begin{enumerate}
+    \item Arrange $P$ in matrix of $ \lceil n/m \rceil $ rows and $m$ columns
+    \item Sort columns alphabetically by $K$
+    \item Read columns vertically to produce ciphertext $C$
+\end{enumerate}
+
+\subsubsection{JavaScript Implementation}
+\begin{lstlisting}[language=JavaScript, caption=Columnar Transposition Implementation]
+function columnarEncrypt(text) {
+    const key = "SECURITY";
+    const keyLength = key.length;
+    
+    // Create array of indices sorted by key characters
+    const keyIndices = key.split('')
+        .map((char, index) => ({char, index}))
+        .sort((a, b) => a.char.localeCompare(b.char))
+        .map((item, newIndex) => ({originalIndex: item.index, newIndex}));
+    
+    // Create and fill matrix
+    const rows = Math.ceil(text.length / keyLength);
+    const matrix = new Array(rows);
+    for (let i = 0; i < rows; i++) {
+        matrix[i] = text.slice(i * keyLength, 
+                              (i + 1) * keyLength).split('');
+        while (matrix[i].length < keyLength) {
+            matrix[i].push('X');
+        }
+    }
+    
+    // Read columns according to key order
+    let result = '';
+    for (let col = 0; col < keyLength; col++) {
+        const colToRead = keyIndices.find(
+            item => item.newIndex === col).originalIndex;
+        for (let row = 0; row < rows; row++) {
+            result += matrix[row][colToRead];
+        }
+    }
+    return result;
+}
+\end{lstlisting}
+
+\subsection{Hill Cipher}
+\subsubsection{Algorithm Description}
+The Hill cipher is a polygraphic substitution cipher based on linear algebra. It encrypts blocks of letters simultaneously using matrix multiplication modulo 26.
+
+\subsubsection{Mathematical Formulation}
+\begin{align*}
+    \text{Encryption:} & \quad \mathbf{C} = \mathbf{K} \times \mathbf{P} \pmod{26} \\
+    \text{Decryption:} & \quad \mathbf{P} = \mathbf{K}^{-1} \times \mathbf{C} \pmod{26}
+\end{align*}
+Where:
+\begin{itemize}
+    \item $\mathbf{K}$ is the $2 \times 2$ key matrix $ \begin{bmatrix} 5 & 8 \\ 17 & 3 \end{bmatrix} $
+    \item $\mathbf{P}$ is the plaintext vector
+    \item $\mathbf{C}$ is the ciphertext vector
+\end{itemize}
+
+\subsubsection{JavaScript Implementation}
+\begin{lstlisting}[language=JavaScript, caption=Hill Cipher Implementation]
+function hillEncrypt(text) {
+    const matrix = [[5, 8], [17, 3]];
+    
+    // Convert to uppercase and remove non-letters
+    text = text.toUpperCase().replace(/[^A-Z]/g, '');
+    if (text.length % 2 !== 0) text += 'X';
+    
+    let result = '';
+    for (let i = 0; i < text.length; i += 2) {
+        const p1 = text.charCodeAt(i) - 65;
+        const p2 = text.charCodeAt(i + 1) - 65;
+        
+        const c1 = (matrix[0][0] * p1 + matrix[0][1] * p2) % 26;
+        const c2 = (matrix[1][0] * p1 + matrix[1][1] * p2) % 26;
+        
+        result += String.fromCharCode(c1 + 65) + 
+                  String.fromCharCode(c2 + 65);
+    }
+    return result;
+}
+\end{lstlisting}
+
+\subsubsection{Matrix Inverse Calculation}
+The decryption requires the inverse matrix modulo 26:
+\[
+\mathbf{K}^{-1} = \begin{bmatrix} 9 & 2 \\ 23 & 15 \end{bmatrix} \pmod{26}
+\]
+Calculated using:
+\[
+\mathbf{K}^{-1} = (\det(\mathbf{K}))^{-1} \times \text{adj}(\mathbf{K}) \pmod{26}
+\]
+Where $\det(\mathbf{K}) = (5 \times 3 - 8 \times 17) = -121 \equiv 9 \pmod{26}$, and $9^{-1} \equiv 3 \pmod{26}$.
+
+\subsection{Rail Fence Cipher}
+\subsubsection{Algorithm Description}
+The rail fence cipher writes the plaintext in a zigzag pattern across a specified number of "rails" and then reads off each rail horizontally.
+
+\subsubsection{Mathematical Formulation}
+For $r$ rails:
+\begin{enumerate}
+    \item Initialize $r$ empty strings (rails)
+    \item Iterate through plaintext characters
+    \item Place character in current rail
+    \item Move to next rail; reverse direction at edges
+    \item Concatenate all rails for ciphertext
+\end{enumerate}
+
+\subsubsection{JavaScript Implementation}
+\begin{lstlisting}[language=JavaScript, caption=Rail Fence Implementation]
+function railFenceEncrypt(text) {
+    const rails = 3;
+    const fence = new Array(rails);
+    for (let i = 0; i < rails; i++) fence[i] = [];
+    
+    let rail = 0;
+    let direction = 1;
+    
+    for (let i = 0; i < text.length; i++) {
+        fence[rail].push(text[i]);
+        
+        // Change direction at edges
+        if (rail === 0 && direction === -1) direction = 1;
+        else if (rail === rails - 1 && direction === 1) direction = -1;
+        
+        rail += direction;
+    }
+    
+    return fence.flat().join('');
+}
+\end{lstlisting}
+
+\subsection{Vigenère Cipher (Numeric Version)}
+\subsubsection{Algorithm Description}
+A polyalphabetic substitution cipher that uses a keyword to shift characters. Our implementation uses a numeric version for phone numbers with key "KEY".
+
+\subsubsection{Mathematical Formulation}
+\begin{align*}
+    \text{Encryption:} & \quad C_i = (P_i + K_i) \mod 10 \\
+    \text{Decryption:} & \quad P_i = (C_i - K_i) \mod 10
+\end{align*}
+Where $K_i$ is the numeric value of the key character at position $i \mod |K|$.
+
+\subsubsection{JavaScript Implementation}
+\begin{lstlisting}[language=JavaScript, caption=Vigenère Cipher Implementation]
+function vigenereEncryptNumeric(text) {
+    const key = "KEY";
+    let result = '';
+    
+    text = text.replace(/\D/g, '');
+    
+    for (let i = 0; i < text.length; i++) {
+        const textChar = parseInt(text[i]);
+        const keyChar = key.charCodeAt(i % key.length) - 65;
+        
+        const encrypted = (textChar + (keyChar % 10)) % 10;
+        result += encrypted.toString();
+    }
+    return result;
+}
+\end{lstlisting}
+
+\section{System Architecture}
+\subsection{Backend Structure}
+The Node.js/Express server provides these endpoints:
+\begin{itemize}
+    \item \texttt{POST /register} - Register user with encrypted data
+    \item \texttt{GET /users/encrypted} - Retrieve encrypted data
+    \item \texttt{GET /users/decrypted} - Retrieve decrypted data
+    \item \texttt{GET /users/both} - Retrieve both views
+    \item \texttt{DELETE /clear} - Clear database (for testing)
+\end{itemize}
+
+\subsection{Database Schema}
+Although simulated with in-memory storage, the PostgreSQL schema would be:
+\begin{verbatim}
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY,
+    full_name_encrypted TEXT NOT NULL,
+    email_encrypted TEXT NOT NULL,
+    password_encrypted TEXT NOT NULL,
+    national_id_encrypted TEXT NOT NULL,
+    phone_encrypted TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW()
+);
+\end{verbatim}
+
+\subsection{Frontend Pages}
+\begin{enumerate}
+    \item \textbf{Registration Page:} Form with five fields, each encrypted differently
+    \item \textbf{Users Page:} Display encrypted/decrypted data with three view options
+    \item \textbf{Presentation Page:} Educational explanation of all algorithms
+\end{enumerate}
+
+\section{Security Analysis}
+\subsection{Vulnerabilities of Classical Encryption}
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Algorithm} & \textbf{Key Space} & \textbf{Main Vulnerability} \\
+\hline
+Caesar Cipher & 25 & Brute force \\
+Columnar Transposition & Permutations of columns & Frequency analysis \\
+Hill Cipher & Invertible matrices & Known-plaintext attack \\
+Rail Fence & Number of rails & Easily guessed \\
+Vigenère & Keyword length & Kasiski examination \\
+\hline
+\end{tabular}
+\caption{Security weaknesses of classical algorithms}
+\end{table}
+
+\subsection{Modern Cryptography Principles}
+\begin{itemize}
+    \item \textbf{Kerckhoffs's Principle:} Security should depend only on the key
+    \item \textbf{Confusion:} Relationship between key and ciphertext should be complex
+    \item \textbf{Diffusion:} Statistical structure of plaintext should be dissipated
+    \item \textbf{Key Size:} Modern algorithms use 128-256 bit keys
+    \item \textbf{Algorithm Standards:} AES, RSA, ECC are vetted and proven
+\end{itemize}
+
+\section{Educational Value}
+This project demonstrates:
+\begin{enumerate}
+    \item Historical encryption techniques and their evolution
+    \item Manual implementation of cryptographic algorithms
+    \item The importance of understanding algorithm weaknesses
+    \item Why modern cryptography requires mathematical rigor
+    \item Practical application of modular arithmetic in cryptography
+\end{enumerate}
+
+\section{Conclusion}
+This classical encryption web application successfully demonstrates five historical encryption techniques through manual implementation. While these algorithms are not secure by modern standards, they provide valuable insight into the foundations of cryptography. The project emphasizes clarity, manual implementation, and academic understanding over technical complexity.
+
+\section*{Appendix: Installation Instructions}
+\subsection*{Backend Setup}
+\begin{verbatim}
+cd backend
+npm install
+npm start
+\end{verbatim}
+
+\subsection*{Frontend Setup}
+Open the HTML files directly in a web browser or serve them using a simple HTTP server.
+
+\subsection*{Testing}
+\begin{enumerate}
+    \item Start backend server on port 3000
+    \item Open \texttt{index.html} in browser
+    \item Register test users
+    \item View encrypted/decrypted data on users page
+    \item Study algorithms on presentation page
+\end{enumerate}
+
+\end{document}
